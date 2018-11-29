@@ -1,6 +1,5 @@
 class IComposer {
     select(id) {
-        console.log(this);
         throw new Error(`You must implement *select* method`);
     }
 
