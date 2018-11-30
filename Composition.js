@@ -36,33 +36,42 @@ class Filter extends IComposer{
         }
     }
 
+    /**
+     * @returns {object}
+     */
     getChild(i) {
         return this.children[i];
     }
 
+    /**
+     * @returns {boolean}
+     */
     hasChildren() {
         return this.children.length > 0;
     }
 
+    /**
+     * @returns {string}
+     */
     hasParent() {
         return this.parentGroupId;
     }
 
     /**
      * show current filter
-     * @returns {*}
+     * @returns {array}
      */
     show(){
-        return this.id
+        return [this.id];
     }
 
     /**
-     * select group of filters
+     * choose Group From Children
      * recursively traverse a (sub)tree
      * @param node
-     * @returns {*}
+     * @returns {array || string}
      */
-    choose(node = this){
+    chooseGroupFromChildren(node = this){
 
         if(!this.hasChildren()) {
             return `no child found for ${node.id}, parentGroupId is: ${this.parentGroupId}`;
@@ -73,10 +82,11 @@ class Filter extends IComposer{
             this.select(node.getChild(i));
             if(i === len-1) {
                 const arrCopy = this.appendToArray(this.selectedIds, {first: node.id});
-                return (this.hasParent()) ? arrCopy : this.selectedIds;
+                return (this.hasParent()) ? new Set([...arrCopy]) : this.selectedIds;
             }
         }
     }
+
     /**
      * get Ids of group or single filters
      * @param node
@@ -88,7 +98,7 @@ class Filter extends IComposer{
             return this.appendToArray(arr, {first: node.id});
         } else {
             // no child found for ${node.id}
-            return node.id;
+            return [node.id];
         }
     }
 
@@ -126,10 +136,11 @@ group2.add(group2_inner2);
 
 
 //test
-console.log( filters.select(group2_inner1) ); // => --x FilterGr2 1
+console.log( filters.select(group2_inner1) ); // => ['--x FilterGr2 1']
 console.log( filters.select(group2) ); // => [ '-x Filter group 2', '--x FilterGr2 1', '--x FilterGr2 2' ]
-console.log( group1_inner2.show() ); // => --x Filter 2
+console.log( group1_inner2.show() ); // => ['--x Filter 2']
 
 //test extra 'choose'
-console.log( group2.choose() ); // => ["-x Filter group 2", "--x FilterGr2 1", "--x FilterGr2 2"]
-console.log( group1_inner2.choose() ); // => no chield found for --x Filter 2, parentGroupId is: -x Filter group 1
+console.log( group1_inner2.chooseGroupFromChildren() ); // => no child found for --x Filter 2, parentGroupId is: -x Filter group 1
+console.log( group2.chooseGroupFromChildren() ); // => ["-x Filter group 2", "--x FilterGr2 1", "--x FilterGr2 2"]
+console.log( group2.chooseGroupFromChildren() ); // => ["-x Filter group 2", "--x FilterGr2 1", "--x FilterGr2 2"]
