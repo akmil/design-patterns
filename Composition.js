@@ -79,7 +79,7 @@ class Filter extends IComposer{
 
         for (let i = 0, len = node.children.length; i < len; i++) {
             this.selectedIds.push(node.getChild(i).id);
-            this.select(node.getChild(i));
+            this.chooseGroupFromChildren(node.getChild(i));
             if(i === len-1) {
                 const arrCopy = this.appendToArray(this.selectedIds, {first: node.id});
                 return (this.hasParent()) ? new Set([...arrCopy]) : this.selectedIds;
